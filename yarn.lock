@@ -519,7 +519,7 @@ koa-better-body@^3.1.6:
     formidable "^1.2.1"
     koa-body-parsers tunnckocore/body-parsers#patch-1
 
-"koa-body-parsers@github:tunnckocore/body-parsers#patch-1":
+koa-body-parsers@tunnckocore/body-parsers#patch-1:
   version "3.1.0"
   resolved "https://codeload.github.com/tunnckocore/body-parsers/tar.gz/7788b9cf82d84f90bbd543f8753affb82baf3a96"
   dependencies:

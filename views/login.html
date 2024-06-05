@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.hide{display:none;}
+	</style>
+</head>
+<body>
+	<div>
+		<h2>登录</h2>
+		<div>
+			<label for="">用户名</label>
+			<input type="text" id="username" name="username" value="admin">
+		</div>
+		<div>
+			<label for="">密码</label>
+			<input type="password" id="password" name="password">
+		</div>
+		<button id="login">登录</button>
+	</div>
+	
+	
+</body>
+<script src="md5.js"></script>
+<script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+<script src="jquery.js"></script>
+<script type="module">
+	var regs = /[\w"=\s']*/.source
+	var reg = new RegExp("<body>([\\w\\W]*)</body>","g")
+	var str = "<body><div><h2>我是title</h2></div></body>"
+	// console.log(reg.test(str))
+	// console.log(reg.exec(str))
+	// console.log(str.match(reg))
+
+
+	//import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
+	$("#login").on("click",function(){
+		var key = uuidv4()
+		var username = $("#username").val();
+		var password = $("#password").val();
+
+		var hashPwd = md5(md5(username, key), password)
+		console.log(hashPwd)
+		var data = {
+			username: username,
+			key: key,
+			password: hashPwd
+		}
+		$.ajax({
+			type: "post",
+			url: "http://localhost:3003/login",
+			data: data,
+			dataType: "json",
+			success: function(res){
+				if(res.code == 0){
+					alert("登录成功")
+				}
+			}
+		})
+	})
+</script>
+</html>

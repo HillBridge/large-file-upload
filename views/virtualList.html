@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title></title>
+	
+	<style type="text/css">
+		.wrapper {
+		  height: 100%;
+		  overflow: auto;
+		  border: 1px solid red;
+		}
+		
+		.item {
+			border:1px solid #ccc;
+		  height: 50px;
+		  padding-left: 50px;
+		}
+	</style>
+</head>
+<body>
+	
+	<div id="app">
+	  <div class="wrapper" ref="wrapper" @scroll="handleScroll" :style="{ height: height + 'px' }">
+	    <div ref="w">
+	      <div :style="{ height: `${shimTopOffset}px` }"></div>
+	      <div
+	        class="item"
+	        v-for="item in showList"
+	        :key="item.index"
+	        :style="{
+	          height: `${itemHeight}px`,
+	          color: item.color,
+	        }"
+	      >
+	        {{ item.index }}
+	      </div>
+	      <div :style="{ height: `${shimBottomOffset}px` }"></div>
+	    </div>
+	  </div>
+	</div>
+	
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+	var level1 = document.body.children
+	
+	for(var i=0;i<level1.length;i++){
+		console.log(typeof level1[i])
+	}
+	//console.log(level1Res)
+	//v.match(/\/[a-z]+>/).input
+</script>
+<script type="text/javascript">
+	new Vue({
+	  el: '#app',
+	  data() {
+	    return {
+	      height: 500,
+	      itemHeight: 50,
+	      data: Array.from({ length: 6000 }).map((_, index) => ({
+	        index,
+	        color: `#${Math.random()
+	          .toString(16)
+	          .substr(2, 6)}`,
+	      })),
+	      showList: [],
+	      shimTopOffset: 0,
+	      shimBottomOffset: 0,
+	    };
+	  },
+	  mounted() {
+	    this.update(0);
+	    this.$nextTick(() => {
+	      this.maxHeight = this.$refs.w.offsetHeight;
+	    });
+	  },
+	  methods: {
+	    handleScroll() {
+	      const scrollTop = this.$refs.wrapper.scrollTop;
+	      if (scrollTop >= 0 && scrollTop + this.height <= this.maxHeight) {
+	        window.requestAnimationFrame(() => {
+	          this.update(scrollTop);
+	        });
+	      }
+	    },
+	    update(scrollTop) {
+	      const visibleStart = scrollTop;
+	      const visibleEnd = scrollTop + this.height;
+	      this.showList = this.getShowList(visibleStart, visibleEnd, this.data);
+	    },
+	    getShowList(start, end, data) {
+	      if (start < end) {
+	        const lo = this.getStartIndex(start, this.itemHeight);
+	        const hi = this.getEndIndex(end, this.itemHeight);
+	        this.shimTopOffset = lo >= 0 ? lo * this.itemHeight : 0;
+	        this.shimBottomOffset = hi >= 0 ? (data.length - hi) * this.itemHeight : 0;
+	        return data.slice(lo, hi);
+	      } else {
+	        this.shimTopOffset = 0;
+	        this.shimBottomOffset = 0;
+	        return [];
+	      }
+	    },
+	    getStartIndex(s, itemHeight) {
+	      const startIndex = ~~(s / itemHeight);
+	      return startIndex >= 0 ? startIndex : 0;
+	    },
+	    getEndIndex(e, itemHeight) {
+	      const endIndex = Math.ceil(e / itemHeight);
+	      return endIndex <= this.data.length ? endIndex : this.data.length;
+	    },
+	  },
+	  watch: {
+	    data: {
+	      handler(newVal, oldVal) {
+	        if (oldVal) {
+	          this.$nextTick(() => {
+	            this.$refs.wrapper.scrollTop = 0;
+	            this.handleScroll();
+	          });
+	        }
+	      },
+	      immediate: true,
+	    },
+	    itemHeight() {
+	      this.handleScroll();
+	    },
+	  },
+	})
+</script>
+</body>
+</html>

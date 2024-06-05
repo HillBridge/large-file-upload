@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.hide{display:none;}
+	</style>
+</head>
+<body>
+	<div>
+		<h2>注册</h2>
+		<div>
+			<label for="">用户名</label>
+			<input type="text" id="username" name="username" value="admin">
+		</div>
+		<div>
+			<label for="">密码</label>
+			<input type="password" id="password" name="password">
+		</div>
+		<button id="register">注册</button>
+	</div>
+	
+	
+</body>
+<!-- <script src="md5.js"></script> -->
+<!-- <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script> -->
+<script src="jsencrypt.js"></script>
+<script src="jquery.js"></script>
+<script>
+	function getPubKey(){
+		if(localStorage.getItem("pubkey")){
+			return;
+		}
+		$.ajax({
+				type: "get",
+				url: "http://localhost:3003/pubkey",
+				dataType: "json",
+				success: function(res){
+					if(res.code == 0 ){
+						localStorage.setItem("pubkey",res.data.public_key)
+					}
+				}
+			})
+	}
+	$(function(){
+		getPubKey()
+		$("#register").on("click",function(){
+			//var key = uuidv4()
+			var username = $("#username").val();
+			var password = $("#password").val();
+
+			//var hashPwd = md5(md5(username, key), password)  对称加密md5
+			var encrypt = new JSEncrypt();
+			var pubkey = localStorage.getItem("pubkey")
+			encrypt.setPublicKey(pubkey);
+			var encrypted = encrypt.encrypt(password);
+
+			var data = {
+				username: username,
+				password: encrypted
+			}
+			$.ajax({
+				type: "post",
+				url: "http://localhost:3003/register",
+				data: data,
+				dataType: "json",
+				success: function(res){
+					if(res.code == 0 ){
+						alert("注册成功，请登录")
+						location.href="login.html"
+					}
+					console.log("res",res)
+				}
+			})
+		})
+	})
+	
+	
+</script>
+</html>

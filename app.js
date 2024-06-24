@@ -10,6 +10,7 @@ const koaBody = require("koa-body");
 const Router = require("koa-router");
 const router = new Router();
 const app = new Koa();
+const cookie = require("cookie");
 
 app.use(
   static(path.join(__dirname, "./"), {
@@ -38,6 +39,8 @@ app.use(
 middleware(app);
 
 router.get("/userInfo", (ctx) => {
+  const parseCookies = cookie.parse(ctx.request.header.cookie);
+  console.log("userInfo", parseCookies, ctx.session.qiao);
   const userInfo = {
     username: "qiao",
     age: 28,
@@ -49,6 +52,32 @@ router.get("/userInfo", (ctx) => {
       userInfo,
     },
   };
+});
+
+router.post("/login", (ctx) => {
+  const { username, password } = ctx.request.body;
+  if (username === "admin" && password === "123456") {
+    const token = "qiao0624";
+    ctx.session.token = token;
+    // console.log("ddd", ctx.session.public_key, ctx.session.tt);
+    // ctx.cookies.set("token", token, {
+    //   expires: new Date("2024-06-30"),
+    //   httpOnly: true,
+    // });
+    ctx.body = {
+      code: "0",
+      data: {
+        token,
+      },
+      msg: "success",
+    };
+  } else {
+    ctx.body = {
+      code: "0",
+      data: null,
+      msg: "username or password is wrong",
+    };
+  }
 });
 
 router.post("/checkfile", async (ctx) => {

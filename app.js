@@ -10,7 +10,6 @@ const koaBody = require("koa-body");
 const Router = require("koa-router");
 const router = new Router();
 const app = new Koa();
-const cookie = require("cookie");
 
 app.use(
   static(path.join(__dirname, "./"), {
@@ -39,8 +38,13 @@ app.use(
 middleware(app);
 
 router.get("/userInfo", (ctx) => {
-  const parseCookies = cookie.parse(ctx.request.header.cookie);
-  console.log("userInfo", parseCookies, ctx.session.qiao);
+  // const cookies = ctx.request.header.cookie
+  const cookies = ctx.cookies.get("kkb:sess");
+  if (cookies) {
+    const parseCookies = JSON.parse(atob(cookies));
+    console.log("userInfo", parseCookies["token"]);
+  }
+
   const userInfo = {
     username: "qiao",
     age: 28,

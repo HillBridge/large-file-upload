@@ -1,6 +1,6 @@
 const logger = require("koa-logger");
 const bodyParser = require("koa-bodyparser");
-const session = require("koa-session");
+const session = require("koa-session"); // koa-session内部使用base64对数据进行的加解密
 const cookie = require("koa-cookie").default;
 const rsaInstance = require("../util/walk");
 const cors = require("@koa/cors");
@@ -15,8 +15,8 @@ module.exports = (app) => {
     session(
       {
         key: "kkb:sess",
-        maxAge: 60 * 60 * 24 * 1000,
-        // maxAge: 1000,
+        //maxAge: 60 * 60 * 24 * 1000,
+        maxAge: 10 * 1000,
         httpOnly: true,
         renew: false, //当cookie快过期时请求,会重置cookie的过期时间
       },
@@ -41,12 +41,12 @@ module.exports = (app) => {
     ctx.set("Access-Control-Allow-Headers", "*");
     ctx.set("Access-Control-Allow-Credentials", true);
 
-    //console.log("public_key+++",ctx.session.public_key)
+    // console.log("public_key+++", ctx.session.public_key);
     // session
-    if (!ctx.session.public_key) {
-      ctx.session.public_key = rsaInstance.public_key;
-      ctx.session.private_key = rsaInstance.private_key;
-    }
+    // if (!ctx.session.public_key) {
+    //   ctx.session.public_key = rsaInstance.public_key;
+    //   ctx.session.private_key = rsaInstance.private_key;
+    // }
     await next();
   });
 

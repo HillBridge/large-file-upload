@@ -15,8 +15,8 @@ module.exports = (app) => {
     session(
       {
         key: "kkb:sess",
-        //maxAge: 60 * 60 * 24 * 1000,
-        maxAge: 10 * 1000,
+        maxAge: 60 * 60 * 24 * 1000,
+        // maxAge: 10 * 1000,
         httpOnly: true,
         renew: false, //当cookie快过期时请求,会重置cookie的过期时间
       },

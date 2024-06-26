@@ -40,8 +40,11 @@ middleware(app);
 router.get("/userInfo", (ctx) => {
   // const cookies = ctx.request.header.cookie
   const cookies = ctx.cookies.get("kkb:sess");
+
   if (cookies) {
-    const parseCookies = JSON.parse(atob(cookies));
+    const buffer = Buffer.from(cookies, "base64");
+    const decodedString = buffer.toString("utf8");
+    const parseCookies = JSON.parse(decodedString);
     console.log("userInfo", parseCookies["token"]);
   }
 

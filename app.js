@@ -46,19 +46,24 @@ router.get("/userInfo", (ctx) => {
     const decodedString = buffer.toString("utf8");
     const parseCookies = JSON.parse(decodedString);
     console.log("userInfo", parseCookies["token"]);
-  }
 
-  const userInfo = {
-    username: "qiao",
-    age: 28,
-    love: "paly games",
-  };
-  ctx.body = {
-    code: "0",
-    data: {
-      userInfo,
-    },
-  };
+    const userInfo = {
+      username: "qiao",
+      age: 28,
+      love: "paly games",
+    };
+    ctx.body = {
+      code: "0",
+      data: {
+        userInfo,
+      },
+    };
+  } else {
+    ctx.body = {
+      code: "401",
+      data: null,
+    };
+  }
 });
 
 router.post("/login", (ctx) => {

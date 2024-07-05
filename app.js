@@ -40,12 +40,33 @@ middleware(app);
 router.get("/userInfo", (ctx) => {
   // const cookies = ctx.request.header.cookie
   const cookies = ctx.cookies.get("kkb:sess");
-
+  const token = ctx.request.headers["authorization"];
+  console.log(" ctx.request.header", token);
+  if (token) {
+    const userInfo = {
+      username: "qiao",
+      age: 28,
+      love: "paly games",
+    };
+    ctx.body = {
+      code: "0",
+      data: {
+        userInfo,
+      },
+    };
+  } else {
+    ctx.status = 401;
+    ctx.body = {
+      code: "401",
+      data: null,
+    };
+  }
+  return false;
   if (cookies) {
     const buffer = Buffer.from(cookies, "base64");
     const decodedString = buffer.toString("utf8");
     const parseCookies = JSON.parse(decodedString);
-    console.log("userInfo", parseCookies["token"]);
+    console.log("userInfo", parseCookies["token"], ctx.request);
 
     const userInfo = {
       username: "qiao",
@@ -59,6 +80,7 @@ router.get("/userInfo", (ctx) => {
       },
     };
   } else {
+    ctx.status = 401;
     ctx.body = {
       code: "401",
       data: null,
